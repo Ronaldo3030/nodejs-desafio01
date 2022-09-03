@@ -86,9 +86,6 @@ app.put('/todos/:id', checksExistsUserAccount, (req, res) => {
   return res.status(201).send();
 });
 
-// ### PATCH `/todos/:id/done`
-
-// A rota deve receber, pelo header da requisição, uma propriedade `username` contendo o username do usuário e alterar a propriedade `done` para `true` no *todo* que possuir um `id` igual ao `id` presente nos parâmetros da rota.
 app.patch('/todos/:id/done', checksExistsUserAccount, (req, res) => {
   const { username } = req;
   const { id } = req.params;
@@ -102,8 +99,19 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (req, res) => {
   res.status(201).send();
 });
 
+
+// ### DELETE `/todos/:id`
+
+// A rota deve receber, pelo header da requisição, uma propriedade `username` contendo o username do usuário e excluir o *todo* que possuir um `id` igual ao `id` presente nos parâmetros da rota.
 app.delete('/todos/:id', checksExistsUserAccount, (req, res) => {
-  // Complete aqui
+  const { username } = req;
+  const {id} = req.params;
+
+  const user = users.find(user => user.username === username);
+
+  user.todos = user.todos.filter(todo => todo.id !== id);
+
+  return res.send();
 });
 
 module.exports = app;
