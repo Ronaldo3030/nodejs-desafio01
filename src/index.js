@@ -63,8 +63,29 @@ app.post('/todos', checksExistsUserAccount, (req, res) => {
   return res.status(201).json(task);
 });
 
+// ### PUT `/todos/:id`
+// A rota deve receber, pelo header da requisição, uma propriedade `username` contendo o username do usuário e receber as propriedades `title` e `deadline` dentro do corpo. É preciso alterar **apenas** o `title` e o `deadline` da tarefa que possua o `id` igual ao `id` presente nos parâmetros da rota.
 app.put('/todos/:id', checksExistsUserAccount, (req, res) => {
-  // Complete aqui
+  const { username } = req;
+  const { title, deadline } = req.body;
+  const { id } = req.params;
+
+  const user = users.find(user => user.username === username);
+
+  const task = user.todos.find(todo => todo.id === id);
+
+  if(!task){
+    return res.status(400).json({error: "Task inexistente"});
+  }
+
+  if(title){
+    task.title = title;
+  }
+  if(deadline){
+    task.deadline = new Date(deadline);
+  }
+
+  return res.status(201).send();
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (req, res) => {
