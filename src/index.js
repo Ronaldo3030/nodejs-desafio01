@@ -25,15 +25,22 @@ function checksExistsUserAccount(req, res, next) {
 
 app.post('/users', (req, res) => {
   const { name, username } = req.body;
-
-  users.push({
+  const user = {
     id: uuidv4(),
     name,
     username,
     todos: []
-  });
+  };
 
-  return res.status(201).send();
+  const userAlreadyExist = users.some(user => user.username === username);
+
+  if (userAlreadyExist) {
+    return res.status(400).json({error: "Usuário já existe!"});
+  };
+
+  users.push(user);
+
+  return res.status(201).json(user);
 });
 
 app.get('/todos', checksExistsUserAccount, (req, res) => {
@@ -99,13 +106,9 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (req, res) => {
   res.status(201).send();
 });
 
-
-// ### DELETE `/todos/:id`
-
-// A rota deve receber, pelo header da requisição, uma propriedade `username` contendo o username do usuário e excluir o *todo* que possuir um `id` igual ao `id` presente nos parâmetros da rota.
 app.delete('/todos/:id', checksExistsUserAccount, (req, res) => {
   const { username } = req;
-  const {id} = req.params;
+  const { id } = req.params;
 
   const user = users.find(user => user.username === username);
 
