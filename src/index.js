@@ -101,6 +101,10 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (req, res) => {
 
   const task = user.todos.find(todo => todo.id === id);
 
+  if(!task){
+    return res.status(400).json({error: "Id inexistente"});
+  };
+
   task.done = true;
 
   res.status(201).send();
@@ -112,9 +116,15 @@ app.delete('/todos/:id', checksExistsUserAccount, (req, res) => {
 
   const user = users.find(user => user.username === username);
 
+  const task = user.todos.find(todo => todo.id === id);
+
+  if(!task){
+    return res.status(400).json({error: "Id inexistente"});
+  };
+
   user.todos = user.todos.filter(todo => todo.id !== id);
 
-  return res.send();
+  return res.status(204).send();
 });
 
 module.exports = app;
